@@ -1,0 +1,156 @@
+<!-- FONDO ÉPICO -->
+<div class="home-wrapper">
+
+  <!-- Capa de fondo animado -->
+  <div class="bg-layer"></div>
+  <div class="bg-overlay"></div>
+
+  <!-- Partículas flotantes -->
+  <div class="particles">
+    @for (p of particles; track p) {
+      <div class="particle" [style]="p"></div>
+    }
+  </div>
+
+  <!-- Pokéballs decorativas flotando -->
+  <div class="deco-balls">
+    <div class="deco-ball ball-1"></div>
+    <div class="deco-ball ball-2"></div>
+    <div class="deco-ball ball-3"></div>
+    <div class="deco-ball ball-4"></div>
+  </div>
+
+  <!-- Rayos de energía de fondo -->
+  <div class="energy-rays">
+    @for (r of rays; track r) {
+      <div class="ray" [style]="r"></div>
+    }
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="main-content">
+
+    <!-- LOGO / TÍTULO -->
+    <div class="title-block">
+      <div class="pokeball-logo">
+        <div class="pb-top"></div>
+        <div class="pb-band"></div>
+        <div class="pb-bottom"></div>
+        <div class="pb-center">
+          <div class="pb-inner"></div>
+        </div>
+      </div>
+      <h1 class="game-title">
+        <span class="title-pokemon">Pokémon</span>
+        <span class="title-teseg">TESEG</span>
+      </h1>
+      <p class="title-sub">✦ Trading Card Game ✦</p>
+    </div>
+
+    <!-- BIENVENIDA -->
+    @if (currentUser) {
+      <div class="trainer-card">
+        <div class="trainer-avatar">🏆</div>
+        <div class="trainer-info">
+          <span class="trainer-label">Entrenador</span>
+          <span class="trainer-name">{{ username }}</span>
+        </div>
+        <div class="trainer-badge">★</div>
+      </div>
+    }
+
+    <!-- MENÚ PRINCIPAL -->
+    <nav class="menu-nav">
+
+      <!-- JUGAR CONTRA PC -->
+      <button class="nav-btn btn-pve" (click)="onNavigate('pve')">
+        <div class="btn-bg-glow"></div>
+        <div class="btn-inner">
+          <div class="btn-icon-wrap">
+            <span class="btn-icon">⚡</span>
+          </div>
+          <div class="btn-texts">
+            <span class="btn-title">Contra la PC</span>
+            <span class="btn-desc">Batalla 1 vs 1 contra la IA</span>
+          </div>
+          <span class="btn-arrow">▶</span>
+        </div>
+        <div class="btn-shine"></div>
+      </button>
+
+      <!-- JUGAR EN LÍNEA -->
+      <button class="nav-btn btn-pvp" (click)="onNavigate('pvp')">
+        <div class="btn-bg-glow"></div>
+        <div class="btn-inner">
+          <div class="btn-icon-wrap">
+            <span class="btn-icon">🌍</span>
+          </div>
+          <div class="btn-texts">
+            <span class="btn-title">En Línea</span>
+            <span class="btn-desc">Desafía entrenadores reales</span>
+          </div>
+          <span class="btn-arrow">▶</span>
+        </div>
+        <div class="btn-shine"></div>
+      </button>
+
+      <!-- FILA SECUNDARIA -->
+      <div class="menu-row-secondary">
+
+        <button class="nav-btn btn-collection" (click)="onNavigate('collection')">
+          <div class="btn-bg-glow"></div>
+          <div class="btn-inner">
+            <div class="btn-icon-wrap small">
+              <span class="btn-icon">🃏</span>
+            </div>
+            <div class="btn-texts">
+              <span class="btn-title">Colección</span>
+              <span class="btn-desc">Ver mis cartas</span>
+            </div>
+            <span class="btn-arrow">▶</span>
+          </div>
+          <div class="btn-shine"></div>
+        </button>
+
+        <button class="nav-btn btn-history" (click)="onNavigate('history')">
+          <div class="btn-bg-glow"></div>
+          <div class="btn-inner">
+            <div class="btn-icon-wrap small">
+              <span class="btn-icon">📊</span>
+            </div>
+            <div class="btn-texts">
+              <span class="btn-title">Historial</span>
+              <span class="btn-desc">Mis batallas</span>
+            </div>
+            <span class="btn-arrow">▶</span>
+          </div>
+          <div class="btn-shine"></div>
+        </button>
+
+      </div>
+    </nav>
+
+    <!-- ACCIONES DE AUTENTICACIÓN -->
+    <div class="auth-zone">
+      @if (!currentUser) {
+        <button class="auth-btn btn-login" (click)="onNavigate('login')">
+          <span>Iniciar Sesión</span>
+        </button>
+        <button class="auth-btn btn-register" (click)="onNavigate('register')">
+          <span>Registrarse</span>
+        </button>
+      }
+      @if (currentUser) {
+        <button class="auth-btn btn-logout" (click)="logout()">
+          <span>🚪 Cerrar Sesión</span>
+        </button>
+      }
+    </div>
+
+    <!-- PIE -->
+    <footer class="home-footer">
+      <span>© 2025 Pokémon TESEG · Todos los derechos reservados</span>
+    </footer>
+
+  </div>
+</div>

@@ -1,0 +1,309 @@
+<!-- PANTALLA DE SELECCIÓN -->
+@if (phase === 'selecting' && !loading) {
+  <div class="selection-screen">
+    <h1 class="selection-title">Elige a tu luchador</h1>
+    <p class="selection-subtitle">Selecciona 1 carta para iniciar la batalla rápida 1 vs 1</p>
+
+    <div class="selection-cards">
+      @for (card of starterCards; track card.id) {
+        <div class="tcg-card" [ngClass]="'type-' + card.types[0]" (click)="selectCard(card)" style="cursor:pointer;">
+          <div class="tcg-header">
+            <span class="tcg-name">{{ card.name }}</span>
+            <div class="tcg-hp-block">
+              <span class="tcg-hp-label">HP</span>
+              <span class="tcg-hp-value">{{ card.hp }}</span>
+            </div>
+          </div>
+          <div class="tcg-image-frame">
+            <img [src]="card.image" [alt]="card.name" />
+            <span class="tcg-type-badge">{{ card.types[0] }}</span>
+          </div>
+          <div class="tcg-body">
+            @for (move of card.moves; track move.name) {
+              <div class="tcg-ability-row">
+                <div class="tcg-energy-cost">
+                  <span class="tcg-energy" [ngClass]="'energy-' + card.types[0]"></span>
+                </div>
+                <div class="tcg-move-info">
+                  <span class="tcg-move-name">{{ move.name }}</span>
+                  <span class="tcg-move-damage">{{ move.power > 0 ? move.power : '' }}</span>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="tcg-footer">
+            <div class="tcg-footer-item">
+              <span class="tcg-footer-label">ATK</span>
+              <span class="tcg-footer-value">{{ card.attack }}</span>
+            </div>
+            <div class="tcg-footer-item">
+              <span class="tcg-footer-label">DEF</span>
+              <span class="tcg-footer-value">{{ card.defense }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- TABLERO DE BATALLA -->
+@if (phase === 'battling' && !loading && gameState) {
+  <div class="game-board-container">
+
+    <!-- Decoración del campo -->
+    <div class="battle-divider"></div>
+    <div class="battle-center-orb"></div>
+
+    <!-- OVERLAY DE FIN DE JUEGO -->
+    @if (gameState.status === 'won' || gameState.status === 'lost') {
+      <div class="game-over-overlay">
+        <div class="game-over-box" [ngClass]="{'won': gameState.status === 'won', 'lost': gameState.status === 'lost'}">
+          <h1>{{ gameState.status === 'won' ? '¡VICTORIA!' : 'DERROTA...' }}</h1>
+          <button class="action-btn" (click)="resetGame()">Jugar de Nuevo</button>
+          <button class="action-btn secondary" routerLink="/">Volver al Menú</button>
+        </div>
+      </div>
+    }
+
+    <!-- HUD IZQUIERDA -->
+    <div class="hud-left">
+      <h2 class="turn-indicator" [class.ai-turn]="gameState.activePlayerId === 'ai'">
+        {{ gameState.activePlayerId === 'player' ? 'TU TURNO' : 'TURNO RIVAL' }}
+      </h2>
+      <button class="action-btn end-turn"
+              [disabled]="gameState.activePlayerId !== 'player'"
+              (click)="onEndTurn()">
+        Finalizar Turno
+      </button>
+      <div class="battle-log">
+        @for (msg of gameState.log; track $index) {
+          <div class="log-entry">{{ msg }}</div>
+        }
+      </div>
+    </div>
+
+    <!-- HUD DERECHA -->
+    <div class="hud-right">
+      <div class="score-counter ai-score"
+           (click)="gameState.ai.field.length === 0 ? onAttackPlayerDirectly() : null"
+           [class.direct-attackable]="selectedMoveIndex !== null && gameState.ai.field.length === 0">
+        <span class="label">HP Rival</span>
+        <div class="player-hp-bar">
+          <div class="player-hp-fill"
+               [style.width.%]="(gameState.ai.hp / 9000) * 100"
+               [style.background]="gameState.ai.hp > 2500 ? '#4ade80' : '#ef4444'"></div>
+        </div>
+        <span class="points">{{ gameState.ai.hp }}</span>
+      </div>
+      <div class="score-counter player-score">
+        <span class="label">Mis HP</span>
+        <div class="player-hp-bar">
+          <div class="player-hp-fill"
+               [style.width.%]="(gameState.player.hp / 9000) * 100"
+               [style.background]="gameState.player.hp > 2500 ? '#4ade80' : '#ef4444'"></div>
+        </div>
+        <span class="points">{{ gameState.player.hp }}</span>
+      </div>
+    </div>
+
+    <!-- SECCIÓN RIVAL (IA) -->
+    <div class="board-section ai-section">
+      <!-- Mano Rival (dorso) -->
+      <div class="hand-zone ai-hand">
+        @for (c of gameState.ai.hand; track $index) {
+          <div class="tcg-card tcg-card-back in-hand"></div>
+        }
+      </div>
+
+      <!-- Campo Rival -->
+      <div class="field-zone">
+        @for (card of gameState.ai.field; track card.gameId) {
+          <div class="tcg-card in-field"
+               [ngClass]="'type-' + card.types[0]"
+               [class.targetable]="selectedMoveIndex !== null"
+               [class.super-effective-target]="selectedMoveIndex !== null && isSuperEffectiveTarget(card)"
+               [class.is-hit]="card.isHit"
+               [class.is-defeated]="card.isDefeated"
+               (click)="onSelectEnemyFieldCard(card)">
+            <!-- Barra HP -->
+            <div class="tcg-hp-bar-overlay">
+              <div class="tcg-hp-bar-fill"
+                   [style.width.%]="(card.currentHp / card.hp) * 100"
+                   [style.background]="(card.currentHp / card.hp) > 0.5 ? '#22c55e' : '#ef4444'"></div>
+            </div>
+            @if (card.isDefending) {
+              <div class="tcg-defense-badge">🛡️</div>
+            }
+            <div class="tcg-header">
+              <span class="tcg-name">{{ card.name }}</span>
+              <div class="tcg-hp-block">
+                <span class="tcg-hp-label">HP</span>
+                <span class="tcg-hp-value">{{ card.currentHp }}</span>
+              </div>
+            </div>
+            <div class="tcg-image-frame">
+              <img [src]="card.image" [alt]="card.name" />
+            </div>
+            <div class="tcg-body">
+              @for (move of card.moves; track move.name) {
+                <div class="tcg-ability-row">
+                  <div class="tcg-energy-cost">
+                    <span class="tcg-energy" [ngClass]="'energy-' + card.types[0]"></span>
+                  </div>
+                  <div class="tcg-move-info">
+                    <span class="tcg-move-name">{{ move.name }}</span>
+                    <span class="tcg-move-damage">{{ move.power > 0 ? move.power : '' }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+            <div class="tcg-footer">
+              <div class="tcg-footer-item">
+                <span class="tcg-footer-label">ATK</span>
+                <span class="tcg-footer-value">{{ card.attack }}</span>
+              </div>
+              <div class="tcg-footer-item">
+                <span class="tcg-footer-label">DEF</span>
+                <span class="tcg-footer-value">{{ card.defense }}</span>
+              </div>
+            </div>
+          </div>
+        }
+        @for (i of [1,2,3]; track i) {
+          @if (i > gameState.ai.field.length) {
+            <div class="empty-slot"></div>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- SECCIÓN JUGADOR -->
+    <div class="board-section player-section">
+      <!-- Campo Jugador -->
+      <div class="field-zone">
+        @for (card of gameState.player.field; track card.gameId) {
+          <div class="tcg-card in-field"
+               [ngClass]="'type-' + card.types[0]"
+               [class.can-attack]="card.canAttack && gameState.activePlayerId === 'player'"
+               [class.selected-attacker]="selectedAttackerId === card.gameId"
+               [class.is-hit]="card.isHit"
+               [class.is-defeated]="card.isDefeated"
+               (click)="onSelectPlayerFieldCard(card)">
+            <!-- Barra HP -->
+            <div class="tcg-hp-bar-overlay">
+              <div class="tcg-hp-bar-fill"
+                   [style.width.%]="(card.currentHp / card.hp) * 100"
+                   [style.background]="(card.currentHp / card.hp) > 0.5 ? '#22c55e' : '#ef4444'"></div>
+            </div>
+            @if (card.isDefending) {
+              <div class="tcg-defense-badge">🛡️</div>
+            }
+            <div class="tcg-header">
+              <span class="tcg-name">{{ card.name }}</span>
+              <div class="tcg-hp-block">
+                <span class="tcg-hp-label">HP</span>
+                <span class="tcg-hp-value">{{ card.currentHp }}</span>
+              </div>
+            </div>
+            <div class="tcg-image-frame">
+              <img [src]="card.image" [alt]="card.name" />
+            </div>
+            <div class="tcg-body">
+              @for (move of card.moves; track move.name) {
+                <div class="tcg-ability-row">
+                  <div class="tcg-energy-cost">
+                    <span class="tcg-energy" [ngClass]="'energy-' + card.types[0]"></span>
+                  </div>
+                  <div class="tcg-move-info">
+                    <span class="tcg-move-name">{{ move.name }}</span>
+                    <span class="tcg-move-damage">{{ move.power > 0 ? move.power : '' }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+            <div class="tcg-footer">
+              <div class="tcg-footer-item">
+                <span class="tcg-footer-label">ATK</span>
+                <span class="tcg-footer-value">{{ card.attack }}</span>
+              </div>
+              <div class="tcg-footer-item">
+                <span class="tcg-footer-label">DEF</span>
+                <span class="tcg-footer-value">{{ card.defense }}</span>
+              </div>
+            </div>
+
+            <!-- Menú de acción -->
+            @if (selectedAttackerId === card.gameId && gameState.activePlayerId === 'player') {
+              <div class="tcg-action-menu">
+                @for (move of card.moves; let i = $index; track move.name) {
+                  <button class="ability-btn move-btn"
+                          [class.selected]="selectedMoveIndex === i"
+                          (click)="onSelectMove(card, i, $event)">
+                    {{ move.name }} @if (move.power > 0) { <span>({{ move.power }})</span> }
+                  </button>
+                }
+                @if (!card.abilityUsed) {
+                  <button class="ability-btn" (click)="onUseAbility(card, $event)">Habilidad (Única)</button>
+                }
+              </div>
+            }
+          </div>
+        }
+        @for (i of [1,2,3]; track i) {
+          @if (i > gameState.player.field.length) {
+            <div class="empty-slot"></div>
+          }
+        }
+      </div>
+
+      <!-- Mano Jugador -->
+      <div class="hand-zone player-hand">
+        @for (card of gameState.player.hand; track card.id) {
+          <div class="tcg-card in-hand"
+               [ngClass]="'type-' + card.types[0]"
+               (click)="onPlayCard(card)">
+            <div class="tcg-header">
+              <span class="tcg-name">{{ card.name }}</span>
+              <div class="tcg-hp-block">
+                <span class="tcg-hp-label">HP</span>
+                <span class="tcg-hp-value">{{ card.hp }}</span>
+              </div>
+            </div>
+            <div class="tcg-image-frame">
+              <img [src]="card.image" [alt]="card.name" />
+            </div>
+            <div class="tcg-body">
+              @for (move of card.moves.slice(0,1); track move.name) {
+                <div class="tcg-ability-row">
+                  <div class="tcg-energy-cost">
+                    <span class="tcg-energy" [ngClass]="'energy-' + card.types[0]"></span>
+                  </div>
+                  <div class="tcg-move-info">
+                    <span class="tcg-move-name">{{ move.name }}</span>
+                    <span class="tcg-move-damage">{{ move.power > 0 ? move.power : '' }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+            <div class="tcg-footer">
+              <div class="tcg-footer-item">
+                <span class="tcg-footer-label">ATK</span>
+                <span class="tcg-footer-value">{{ card.attack }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+}
+
+<!-- Loading State -->
+@if (loading) {
+  <div class="loading-screen">
+    <div class="spinner"></div>
+    <h2>Conectando...</h2>
+  </div>
+}

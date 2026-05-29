@@ -1,0 +1,38 @@
+<div class="history-container">
+  <header class="history-header rotom-panel">
+    <h1>Historial de Batallas</h1>
+    <p>Registros de tus encuentros en PvE y PvP</p>
+    <a routerLink="/" class="back-btn">▶ Volver al Inicio</a>
+  </header>
+
+  <div class="loading-state rotom-panel" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Cargando historial...</p>
+  </div>
+
+  <div class="empty-state rotom-panel" *ngIf="!loading && matches.length === 0">
+    <h2>Aún no hay batallas registradas</h2>
+    <p>Juega en el modo contra la IA o en Línea para empezar a forjar tu leyenda.</p>
+  </div>
+
+  <div class="history-list rotom-panel" *ngIf="!loading && matches.length > 0">
+    <div class="history-card" 
+         *ngFor="let match of matches"
+         [ngClass]="match.result">
+      <div class="match-date">
+        {{ match.created_at | date:'medium' }}
+      </div>
+      <div class="match-info">
+        <div class="mode-badge" [ngClass]="match.game_mode">
+          {{ match.game_mode === 'pve' ? 'Vs IA' : 'Multijugador' }}
+        </div>
+        <div class="opponent">
+          <span class="vs">VS</span> {{ match.opponent_name }}
+        </div>
+      </div>
+      <div class="match-result">
+        {{ match.result === 'win' ? 'VICTORIA' : 'DERROTA' }}
+      </div>
+    </div>
+  </div>
+</div>

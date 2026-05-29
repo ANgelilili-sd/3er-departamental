@@ -1,0 +1,93 @@
+<div class="pokedex-wrapper">
+  <div class="pokedex-top">
+    <div class="main-lens">
+      <div class="lens-glare"></div>
+    </div>
+    <div class="status-lights">
+      <div class="light red"></div>
+      <div class="light yellow"></div>
+      <div class="light green"></div>
+    </div>
+  </div>
+
+  <div class="collection-container pokedex-screen">
+    <div class="pokedex-header">
+      <a routerLink="/" class="back-btn">▶ Salir</a>
+      <h1 class="title">Pokédex</h1>
+    </div>
+
+    @if (loading) {
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Cargando tu colección de cartas...</p>
+      </div>
+    }
+
+    @if (!loading) {
+      <div class="cards-grid">
+        @for (card of cards; track card.id) {
+          <!-- CARTA ESTILO TCG OFICIAL -->
+          <div class="tcg-card tcg-card-collection" [ngClass]="'type-' + card.types[0]">
+
+            <!-- Encabezado: Nombre + HP -->
+            <div class="tcg-header">
+              <span class="tcg-name">{{ card.name }}</span>
+              <div class="tcg-hp-block">
+                <span class="tcg-hp-label">HP</span>
+                <span class="tcg-hp-value">{{ card.hp }}</span>
+              </div>
+            </div>
+
+            <!-- Marco de imagen -->
+            <div class="tcg-image-frame">
+              <img [src]="card.image" [alt]="card.name" />
+              <span class="tcg-type-badge">{{ card.types[0] }}</span>
+            </div>
+
+            <!-- Habilidad especial -->
+            <div class="tcg-ability-section">
+              <div class="tcg-ability-name">✦ {{ card.specialAbility }}</div>
+              <div class="tcg-ability-desc">{{ card.description }}</div>
+            </div>
+
+            <!-- Ataques -->
+            <div class="tcg-body">
+              @for (move of card.moves; track move.name) {
+                <div class="tcg-ability-row">
+                  <div class="tcg-energy-cost">
+                    <span class="tcg-energy" [ngClass]="'energy-' + card.types[0]"></span>
+                    @if (move.power > 50) {
+                      <span class="tcg-energy" [ngClass]="'energy-' + card.types[0]"></span>
+                    }
+                  </div>
+                  <div class="tcg-move-info">
+                    <span class="tcg-move-name">{{ move.name }}</span>
+                    <span class="tcg-move-damage">{{ move.power > 0 ? move.power : '' }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Pie: Debilidad / Resistencia / Rareza -->
+            <div class="tcg-footer">
+              <div class="tcg-footer-item">
+                <span class="tcg-footer-label">Debilidad</span>
+                <span class="tcg-footer-value">×2</span>
+              </div>
+              <div class="tcg-footer-item">
+                <span class="tcg-footer-label">Resistencia</span>
+                <span class="tcg-footer-value">-30</span>
+              </div>
+              <div class="tcg-footer-item">
+                <span class="tcg-footer-label">Retirada</span>
+                <span class="tcg-footer-value">{{ card.defense > 80 ? '●●' : '●' }}</span>
+              </div>
+              <span class="tcg-rarity">{{ card.level }}</span>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

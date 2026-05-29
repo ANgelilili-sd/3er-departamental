@@ -1,0 +1,10 @@
+<router-outlet></router-outlet>
+
+<!-- Global Alert Modal -->
+<div class="global-alert-overlay" *ngIf="alertMessage">
+  <div class="global-alert-box">
+    <div class="global-alert-icon">⚠️</div>
+    <div class="global-alert-text">{{ alertMessage }}</div>
+    <button class="global-alert-btn" (click)="closeAlert()">Aceptar</button>
+  </div>
+</div>

@@ -1,0 +1,88 @@
+<div class="auth-container">
+  <div class="auth-card rotom-panel">
+    <div class="auth-header">
+      <button class="back-btn" routerLink="/">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <h2>Comienza tu Aventura</h2>
+      <p>Crea tu cuenta de entrenador Pokémon</p>
+    </div>
+    
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+      
+      <div class="form-group">
+        <label for="username">Nombre de Entrenador</label>
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            id="username" 
+            formControlName="username" 
+            placeholder="Ej. Ash Ketchum"
+            [ngClass]="{ 'is-invalid': f['username'].touched && f['username'].invalid }"
+          >
+        </div>
+        <div class="error-msg" *ngIf="f['username'].touched && f['username'].errors?.['required']">
+          El nombre es obligatorio.
+        </div>
+        <div class="error-msg" *ngIf="f['username'].touched && f['username'].errors?.['minlength']">
+          Debe tener al menos 3 caracteres.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Correo Electrónico</label>
+        <div class="input-wrapper">
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email" 
+            placeholder="entrenador@pokemon.com"
+            [ngClass]="{ 'is-invalid': f['email'].touched && f['email'].invalid }"
+          >
+        </div>
+        <div class="error-msg" *ngIf="f['email'].touched && f['email'].errors?.['required']">
+          El correo es obligatorio.
+        </div>
+        <div class="error-msg" *ngIf="f['email'].touched && f['email'].errors?.['email']">
+          Formato de correo inválido.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña Segura</label>
+        <div class="input-wrapper">
+          <input 
+            type="password" 
+            id="password" 
+            formControlName="password" 
+            placeholder="Mínimo 8 caracteres"
+            [ngClass]="{ 'is-invalid': f['password'].touched && f['password'].invalid }"
+          >
+        </div>
+        <div class="error-msg" *ngIf="f['password'].touched && f['password'].errors?.['required']">
+          La contraseña es obligatoria.
+        </div>
+        <div class="error-msg" *ngIf="f['password'].touched && f['password'].errors?.['minlength']">
+          Debe tener al menos 8 caracteres.
+        </div>
+        <div class="error-msg" *ngIf="f['password'].touched && f['password'].errors?.['pattern']">
+          Debe incluir al menos una mayúscula, una minúscula y un número.
+        </div>
+      </div>
+
+      <div class="alert error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="isLoading">
+        <span *ngIf="!isLoading">Registrarse</span>
+        <span *ngIf="isLoading" class="loader"></span>
+      </button>
+
+    </form>
+
+    <div class="auth-footer">
+      <p>¿Ya tienes tu Pokédex? <a routerLink="/login">Inicia Sesión</a></p>
+    </div>
+  </div>
+</div>

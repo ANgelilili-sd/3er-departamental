@@ -1,0 +1,196 @@
+/* =============================================
+   COLECCIÓN - ESTILO POKÉDEX
+   ============================================= */
+
+.pokedex-wrapper {
+  background-color: #dc2626;
+  min-height: 100vh;
+  padding: 1rem;
+  border: 12px solid #b91c1c;
+  border-radius: 16px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.pokedex-top {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  background: #dc2626;
+  border-bottom: 4px solid #7f1d1d;
+  margin-bottom: 1rem;
+  gap: 2rem;
+}
+
+.main-lens {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #60a5fa, #1e3a8a);
+  border: 4px solid #f8fafc;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.8), inset 0 0 10px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.lens-glare {
+  position: absolute;
+  top: 15%; left: 20%;
+  width: 25%; height: 25%;
+  background: rgba(255,255,255,0.8);
+  border-radius: 50%;
+  filter: blur(2px);
+}
+
+.status-lights {
+  display: flex;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.light {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid #334155;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
+
+.light.red    { background: radial-gradient(circle at 30% 30%, #fca5a5, #dc2626); box-shadow: 0 0 10px rgba(220,38,38,0.8); }
+.light.yellow { background: radial-gradient(circle at 30% 30%, #fde047, #ca8a04); box-shadow: 0 0 10px rgba(202,138,4,0.8); }
+.light.green  { background: radial-gradient(circle at 30% 30%, #86efac, #16a34a); box-shadow: 0 0 10px rgba(22,163,74,0.8); }
+
+.pokedex-screen {
+  background: #0f172a;
+  border: 8px solid #cbd5e1;
+  border-radius: 12px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+.pokedex-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+  padding-bottom: 1rem;
+}
+
+.back-btn {
+  color: #fff;
+  background: #dc2626;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 8px;
+  border: 2px solid #7f1d1d;
+  box-shadow: 0 4px 0 #7f1d1d;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.back-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #7f1d1d;
+}
+
+.title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 0;
+  color: #60a5fa;
+  text-transform: uppercase;
+  text-shadow: 0 0 15px rgba(96, 165, 250, 0.4);
+  font-weight: 800;
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.5rem;
+  color: var(--text-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 50px; height: 50px;
+  border: 5px solid rgba(255, 204, 0, 0.3);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =============================================
+   GRID DE CARTAS
+   ============================================= */
+.cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+
+/* =============================================
+   CARTA TCG - COLECCIÓN (tamaño completo)
+   ============================================= */
+.tcg-card-collection {
+  width: 245px;
+  height: auto;
+  min-height: 342px;
+  display: flex;
+  flex-direction: column;
+}
+
+.tcg-card-collection .tcg-image-frame {
+  height: 150px;
+}
+
+/* Sección de habilidad especial */
+.tcg-ability-section {
+  background: rgba(255,255,255,0.92);
+  margin: 3px 8px;
+  border-radius: 4px;
+  padding: 4px 7px;
+  border-left: 3px solid rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 2;
+}
+
+.tcg-ability-name {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #c0392b;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+
+.tcg-ability-desc {
+  font-size: 0.6rem;
+  color: #333;
+  line-height: 1.3;
+  font-style: italic;
+}
+
+/* Cuerpo con ataques */
+.tcg-card-collection .tcg-body {
+  background: rgba(255,255,255,0.92);
+  flex: 1;
+}
+
+/* Pie */
+.tcg-card-collection .tcg-footer {
+  background: rgba(0,0,0,0.2);
+  margin-bottom: 8px;
+}
